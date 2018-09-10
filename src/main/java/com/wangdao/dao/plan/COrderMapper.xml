@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wangdao.dao.plan.COrderMapper">
+    <resultMap id="BaseResultMap" type="com.wangdao.bean.plan.COrder">
+        <id column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="custom_id" property="customId" jdbcType="VARCHAR"/>
+        <result column="product_id" property="productId" jdbcType="VARCHAR"/>
+        <result column="order_date" property="orderDate" jdbcType="TIMESTAMP"/>
+        <result column="request_date" property="requestDate" jdbcType="TIMESTAMP"/>
+        <result column="note" property="note" jdbcType="VARCHAR"/>
+        <result column="quantity" property="quantity" jdbcType="INTEGER"/>
+        <result column="unit_price" property="unitPrice" jdbcType="DECIMAL"/>
+        <result column="unit" property="unit" jdbcType="VARCHAR"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="file" property="file" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <association property="custom" javaType="Custom"
+                     select="com.wangdao.dao.plan.CustomMapper.selectByPrimaryKey"
+                     column="custom_id"
+        >
+        </association>
+        <association property="product" javaType="Product"
+                     select="com.wangdao.dao.plan.ProductMapper.selectByPrimaryKey"
+                     column="product_id"
+        >
+        </association>
+    </resultMap>
+
+    <sql id="Update_By_Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+
+    <insert id="insert" parameterType="com.wangdao.bean.plan.COrder">
+    insert into c_order (order_id, custom_id, product_id,
+      order_date, request_date, note,
+      quantity, unit_price, unit,
+      image, file, status
+      )
+    values (#{orderId,jdbcType=VARCHAR}, #{customId,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR},
+      #{orderDate,jdbcType=TIMESTAMP}, #{requestDate,jdbcType=TIMESTAMP}, #{note,jdbcType=VARCHAR},
+      #{quantity,jdbcType=INTEGER}, #{unitPrice,jdbcType=DECIMAL}, #{unit,jdbcType=VARCHAR},
+      #{image,jdbcType=VARCHAR}, #{file,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+
+    <delete id="deleteByExample" parameterType="com.wangdao.bean.plan.COrderExample">
+        delete from c_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+    </delete>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wangdao.bean.plan.COrder">
+        update c_order
+        <set>
+            <if test="customId != null">
+                custom_id = #{customId,jdbcType=VARCHAR},
+            </if>
+            <if test="productId != null">
+                product_id = #{productId,jdbcType=VARCHAR},
+            </if>
+            <if test="orderDate != null">
+                order_date = #{orderDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="requestDate != null">
+                request_date = #{requestDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="note != null">
+                note = #{note,jdbcType=VARCHAR},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity,jdbcType=INTEGER},
+            </if>
+            <if test="unitPrice != null">
+                unit_price = #{unitPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="unit != null">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="image != null">
+                image = #{image,jdbcType=VARCHAR},
+            </if>
+            <if test="file != null">
+                file = #{file,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+        </set>
+        where order_id = #{orderId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findAllOrder" parameterType="cOrder" resultMap="BaseResultMap">
+        SELECT
+        order_id,
+        custom.custom_id,
+        custom_name,
+        product.product_id,
+        product_name,
+        quantity,
+        unit_price,
+        unit,
+        c_order.status,
+        order_date,
+        request_date,
+        c_order.note,
+        c_order.image,
+        file
+        FROM
+        c_order
+        LEFT JOIN custom ON c_order.custom_id = custom.custom_id
+        LEFT JOIN product ON c_order.product_id = product.product_id
+        <if test="status!=null">
+            and status=#{status}
+        </if>
+        ORDER BY c_order.order_date
+    </select>
+
+    <select id="selectCustomIdInCOrderByOrderId" resultType="java.lang.String">
+        SELECT custom_id
+        FROM c_order
+        WHERE order_id=#{orderId}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from c_order
+        where order_id = #{orderId,jdbcType=VARCHAR}
+    </select>
+
+    <sql id="Base_Column_List">
+    order_id, c_order.custom_id, c_order.product_id, order_date, request_date, c_order.note, quantity, unit_price,
+    unit, c_order.image, file, c_order.status
+  </sql>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+
+    <select id="selectByExample" parameterType="com.wangdao.bean.plan.COrderExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        'true' as QUERYID,
+        <include refid="Base_Column_List" />
+        from c_order
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+
+    <select id="selectCOrderListInCOrderByCustomId" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        order_id,
+        custom.custom_id,
+        custom_name,
+        product.product_id,
+        product_name,
+        quantity,
+        unit_price,
+        unit,
+        c_order.status,
+        order_date,
+        request_date,
+        c_order.note,
+        c_order.image,
+        file
+        FROM
+        c_order
+        LEFT JOIN custom ON c_order.custom_id = custom.custom_id
+        LEFT JOIN product ON c_order.product_id = product.product_id
+        WHERE c_order.custom_id=#{customId}
+        ORDER BY c_order.order_date
+    </select>
+
+    <select id="selectCOrderListInCOrderByProductId" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        order_id,
+        custom.custom_id,
+        custom_name,
+        product.product_id,
+        product_name,
+        quantity,
+        unit_price,
+        unit,
+        c_order.status,
+        order_date,
+        request_date,
+        c_order.note,
+        c_order.image,
+        file
+        FROM
+        c_order
+        LEFT JOIN custom ON c_order.custom_id = custom.custom_id
+        LEFT JOIN product ON c_order.product_id = product.product_id
+        WHERE c_order.product_id=#{productId}
+        ORDER BY c_order.order_date
+    </select>
+
+    <!--<select id="selectCOrderIdsByCOrderName" resultType="string">-->
+        <!--SELECT c_order.order_id FROM c_order WHERE c_order.order_name LIKE #{cOrderName}-->
+    <!--</select>-->
+
+
+</mapper>
