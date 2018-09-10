@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://mybatis.org/schema/mybatis-spring
+        http://mybatis.org/schema/mybatis-spring.xsd">
+
+    <!-- mybatis:scan会扫描com.wangdao.dao包里的所有接口当作Spring的bean配置，之后可以进行依赖注入-->
+    <mybatis:scan base-package="com.wangdao.dao"/>
+
+    <!--扫描包,有Spring相关的注解的类，就把这些类注册为Spring的bean-->
+    <context:component-scan base-package="com.wangdao"></context:component-scan>
+
+    <!-- 配置c3p0数据源 -->
+    <!--<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">-->
+        <!--<property name="password" value=""></property>-->
+        <!--<property name="user" value="root"></property>-->
+        <!--<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/production_ssm?serverTimezone=GMT&amp;useSSL=FALSE"></property>-->
+        <!--<property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>-->
+    <!--</bean>-->
+
+    <!--配置alibaba Druid连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="password" value=""></property>
+        <property name="username" value="root"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/production_ssm?serverTimezone=Asia/Shanghai&amp;useSSL=FALSE"></property>
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
+    </bean>
+
+    <!--配置sqlSessionFactory，SqlSessionFactoryBean是Mybatis社区开发用于整合Spring的bean-->
+    <!--<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource"/>-->
+
+    <!--让spring去生成sqlSessionFacotry-->
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="typeAliasesPackage" value="com.wangdao.bean"/>
+        <property name="mapperLocations" value="classpath:com/wangdao/dao/*/*Mapper.xml"/>
+        <property name="dataSource" ref="dataSource"></property>
+        <!--配置分页插件ppageHelper-->
+        <property name="plugins">
+            <array>
+                <!-- com.github.pagehelper为PageHelper类所在包名 -->
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <property name="properties">
+                        <!--使用下面的方式配置参数，一行配置一个 -->
+                        <value>
+                            <!-- 设置数据库类型 Oracle,Mysql,MariaDB,SQLite,Hsqldb,PostgreSQL六种数据库-->
+                            helperDialect=mysql
+                            <!-- 分页合理化参数，默认值为false。当该参数设置为 true 时，pageNum<=0 时会查询第一页，
+                            pageNum>pages（超过总数时），会查询最后一页。默认false 时，直接根据参数进行查询。 -->
+                            reasonable=true
+                        </value>
+                    </property>
+                </bean>
+            </array>
+        </property>
+    </bean>
+
+    <!--Spring AOP Annotation方式-->
+    <!--增加spring来控制事务-->
+    <tx:annotation-driven transaction-manager="txmanager"></tx:annotation-driven>
+    <bean id="txmanager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+    <!--自动去增加处理器适配器和处理器映射器-->
+    <mvc:annotation-driven conversion-service="myConversionServcie"></mvc:annotation-driven>
+
+    <!--注册一个springmvc的类型转换服务-->
+    <bean id="myConversionServcie" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="com.wangdao.util.MyDateConverter"></bean>
+            </set>
+        </property>
+    </bean>
+
+</beans>
