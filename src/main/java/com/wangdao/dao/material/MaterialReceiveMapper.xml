@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangdao.dao.material.MaterialReceiveMapper">
+  <resultMap id="BaseResultMap" type="com.wangdao.bean.material.MaterialReceive">
+    <id column="receive_id" jdbcType="VARCHAR" property="receiveId" />
+    <result column="material_id" jdbcType="VARCHAR" property="materialId" />
+    <result column="amount" jdbcType="INTEGER" property="amount" />
+    <result column="receive_date" jdbcType="TIMESTAMP" property="receiveDate" />
+    <result column="sender" jdbcType="VARCHAR" property="sender" />
+    <result column="receiver" jdbcType="VARCHAR" property="receiver" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <association property="material" javaType="material">
+      <id column="material_id" jdbcType="VARCHAR" property="materialId" />
+      <result column="material_type" jdbcType="VARCHAR" property="materialType" />
+      <result column="status" jdbcType="VARCHAR" property="status" />
+      <result column="remaining" jdbcType="INTEGER" property="remaining" />
+      <result column="note" jdbcType="VARCHAR" property="note" />
+    </association>
+  </resultMap>
+  
+  <select id="selectMaterialReceiveList" resultMap="BaseResultMap">
+    SELECT  * FROM material_receive
+  </select>
+
+    <!--按照receive_id查询信息-->
+    <select id="selectMaterialReceiveById" parameterType="string" resultMap="BaseResultMap">
+        SELECT  * FROM material_receive WHERE receive_id=#{receiveId};
+    </select>
+
+    <!--新增物料收入-->
+    <insert id="insertMaterialReceive" parameterType="MaterialReceive">
+        INSERT INTO  material_receive VALUES (#{receiveId},#{materialId},#{amount},#{receiveDate},#{sender},
+                                              #{receiver},#{note});
+    </insert>
+
+  <!--更新物料收入-->
+  <update id="updateMaterialReceiveById" parameterType="MaterialReceive">
+    UPDATE material_receive SET material_id=#{materialId},amount=#{amount},receive_date=#{receiveDate},
+                                sender=#{sender},receiver=#{receiver},note=#{note}
+                            WHERE receive_id=#{receiveId};
+  </update>
+
+  <!--删除物料收入-->
+  <delete id="deleteMaterialReceive" parameterType="string">
+    DELETE FROM material_receive WHERE receive_id=#{id};
+  </delete>
+
+  <!--根据物料收入编号模糊搜索-->
+  <select id="searchMateraiReceiveById" parameterType="string" resultMap="BaseResultMap">
+    SELECT * FROM material_receive WHERE receive_id LIKE #{id}
+  </select>
+
+  <!--根据物料编号模糊搜索-->
+    <select id="searchMaterialReceiveByMaterialId" parameterType="string" resultMap="BaseResultMap">
+        SELECT * FROM material_receive WHERE material_id LIKE #{id}
+    </select>
+
+  <!--更新备注-->
+  <update id="updateMaterialReceiveNote" parameterType="materialReceive">
+    UPDATE material_receive SET note=#{note} WHERE receive_id =#{receiveId};
+  </update>
+</mapper>

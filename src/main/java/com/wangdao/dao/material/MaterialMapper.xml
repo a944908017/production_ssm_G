@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangdao.dao.material.MaterialMapper">
+  <resultMap id="BaseResultMap" type="com.wangdao.bean.material.Material">
+    <id column="material_id" jdbcType="VARCHAR" property="materialId" />
+    <result column="material_type" jdbcType="VARCHAR" property="materialType" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remaining" jdbcType="INTEGER" property="remaining" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+  </resultMap>
+
+  <select id="selectAllMaterial" resultMap="BaseResultMap">
+    SELECT * FROM material
+  </select>
+
+  <!--增加物料信息-->
+  <insert id="insetMaterial" parameterType="material" >
+    INSERT INTO material VALUES (#{materialId},#{materialType},#{status},
+                                  #{remaining},#{note})
+  </insert>
+
+  <!--按物料编号查询物料信息-->
+  <select id="selectMaterialById" parameterType="string" resultMap="BaseResultMap">
+    SELECT * from material WHERE material_id=#{materialId};
+  </select>
+
+  <!--更新物料信息-->
+  <update id="updateMaterial" parameterType="material">
+    UPDATE material SET material_type=#{materialType},status=#{status},remaining=#{remaining},
+                        note=#{note} WHERE material_id=#{materialId}
+  </update>
+
+  <!--删除物料信息-->
+  <delete id="deleteMaterial" parameterType="string">
+    DELETE FROM material WHERE material_id =#{id}
+  </delete>
+
+  <!--查询物料信息剩余数量-->
+    <select id="selectMaterialAmount" parameterType="string" resultType="integer">
+        SELECT remaining FROM material WHERE material_id=#{materialId}
+    </select>
+
+  <!--更新物料信息剩余数量-->
+ <update id="updateMaterialAmount" parameterType="hashMap">
+   UPDATE material
+   <set>
+     <if test="remaining >= 0">
+       remaining=#{remaining}
+     </if>
+   </set>
+   WHERE material_id=#{materialId};
+ </update>
+
+    <!--根据物料编号模糊查询-->
+    <select id="searchMaterialByMaterialId" parameterType="string" resultMap="BaseResultMap">
+        SELECT * FROM material WHERE material_id LIKE #{id}
+    </select>
+
+    <!--根据物料类型模糊搜索-->
+    <select id="searchMaterialByMaterialType" parameterType="string" resultMap="BaseResultMap">
+        SELECT * FROM material WHERE material_type LIKE #{type}
+    </select>
+
+    <!--更新备注-->
+    <update id="updateMaterialNote" parameterType="material" >
+        UPDATE material SET note=#{note} WHERE material_id=#{materialId}
+    </update>
+</mapper>

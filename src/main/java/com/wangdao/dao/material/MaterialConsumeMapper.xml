@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangdao.dao.material.MaterialConsumeMapper">
+    <resultMap id="BaseResultMap" type="com.wangdao.bean.material.MaterialConsume">
+        <id column="consume_id" jdbcType="VARCHAR" property="consumeId"/>
+        <result column="work_id" jdbcType="VARCHAR" property="workId" />
+        <result column="material_id" jdbcType="VARCHAR" property="materialId"/>
+        <result column="consume_amount" jdbcType="INTEGER" property="consumeAmount"/>
+        <result column="consume_date" jdbcType="TIMESTAMP" property="consumeDate"/>
+        <result column="sender" jdbcType="VARCHAR" property="sender"/>
+        <result column="receiver" jdbcType="VARCHAR" property="receiver"/>
+        <result column="note" jdbcType="VARCHAR" property="note"/>
+        <!--作业 work-->
+        <!--<association property="work" javaType="com.wangdao.bean.plan.Work"
+                     select="com.wangdao.dao.plan.WorkMapper.selectByPrimaryKey"
+                     column="work_id">
+        </association>-->
+        <association property="work" javaType="com.wangdao.bean.plan.Work">
+            <id column="work_id" jdbcType="VARCHAR" property="workId" />
+            <result column="process_number" jdbcType="VARCHAR" property="processNumber" />
+            <result column="product_id" jdbcType="VARCHAR" property="productId" />
+            <result column="process_id" jdbcType="VARCHAR" property="processId" />
+            <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+            <result column="rating" jdbcType="INTEGER" property="rating" />
+        </association>
+
+        <!--物料信息material-->
+       <!-- <association property="material" javaType="com.wangdao.bean.material.Material"
+                     select="com.wangdao.dao.material.MaterialMapper.selectMaterialById"
+                     column="material_id">
+        </association>-->
+        <association property="material" javaType="com.wangdao.bean.material.Material">
+            <id column="material_id" jdbcType="VARCHAR" property="materialId" />
+            <result column="material_type" jdbcType="VARCHAR" property="materialType" />
+            <result column="status" jdbcType="VARCHAR" property="status" />
+            <result column="remaining" jdbcType="INTEGER" property="remaining" />
+            <result column="note" jdbcType="VARCHAR" property="note" />
+        </association>
+    </resultMap>
+
+    <!--查询所有物料消耗信息-->
+    <select id="selectMaterialConsumeList" resultMap="BaseResultMap">
+        SELECT  * FROM material_consume
+    </select>
+
+    <!--按consume_id查询物料消耗信息-->
+    <select id="selectMaterialConsumeById" parameterType="string" resultMap="BaseResultMap">
+        SELECT  * FROM material_consume WHERE consume_id=#{consumeId}
+    </select>
+
+    <!--增加物料消耗信息-->
+    <insert id="insertMaterialConsume" parameterType="materialConsume">
+        INSERT INTO material_consume VALUES (#{consumeId},#{workId},#{materialId},
+                                            #{consumeAmount},#{consumeDate},#{sender},#{receiver},#{note})
+    </insert>
+
+    <!--查询物料信息ID-->
+    <select id="selectMaterialIdByConsumeId" parameterType="string">
+        SELECT material_id FROM material_consume WHERE
+    </select>
+
+    <!--更新物料消耗-->
+    <update id="updateMaterialConsume" parameterType="materialConsume">
+        UPDATE material_consume SET work_id=#{workId},material_id =#{materialId},consume_amount=#{consumeAmount},
+                                    consume_date=#{consumeDate},sender=#{sender},receiver=#{receiver},note=#{note}
+                                    WHERE consume_id=#{consumeId};
+    </update>
+
+    <!--删除物料消耗-->
+    <delete id="deleteMaterialConsumeById" parameterType="string">
+        DELETE FROM material_consume WHERE consume_id=#{consumeId};
+    </delete>
+
+    <!--根据物料消耗编号模糊搜索-->
+    <select id="searchMaterialConsumeByConsumeId" parameterType="string" resultMap="BaseResultMap">
+        SELECT * FROM material_consume WHERE consume_id LIKE #{consumeId}
+    </select>
+
+    <!--根据作业编号模糊搜索-->
+    <select id="searchMaterialConsumeByWorkId" parameterType="string" resultMap="BaseResultMap">
+        SELECT * FROM material_consume WHERE work_id LIKE #{workId}
+    </select>
+
+    <!--根据物料编号模糊搜索-->
+    <select id="searchMaterialConsumeByMaterialId" parameterType="string" resultMap="BaseResultMap">
+        SELECT * FROM material_consume WHERE material_id LIKE #{materialId}
+    </select>
+
+    <!--更新备注-->
+    <update id="updateMaterialReceiveNote" parameterType="materialConsume">
+        UPDATE material_consume SET note=#{note} WHERE consume_id =#{consumeId}
+    </update>
+</mapper>
