@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangdao.dao.technology.TechnologyRequirementMapper">
+  <resultMap id="BaseResultMap" type="com.wangdao.bean.technology.TechnologyRequirement">
+    <id column="technology_requirement_id" jdbcType="VARCHAR" property="technologyRequirementId" />
+    <result column="technology_id" jdbcType="VARCHAR" property="technologyId" />
+    <result column="requirement" jdbcType="VARCHAR" property="requirement" />
+    <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
+    <result column="revise_time" jdbcType="TIMESTAMP" property="reviseTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    technology_requirement_id, technology_id, requirement, add_time, revise_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from technology_requirement
+    where technology_requirement_id = #{technologyRequirementId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from technology_requirement
+    where technology_requirement_id = #{technologyRequirementId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.wangdao.bean.technology.TechnologyRequirement">
+    insert into technology_requirement (technology_requirement_id, technology_id, 
+      requirement, add_time, revise_time
+      )
+    values (#{technologyRequirementId,jdbcType=VARCHAR}, #{technologyId,jdbcType=VARCHAR}, 
+      #{requirement,jdbcType=VARCHAR}, #{addTime,jdbcType=TIMESTAMP}, #{reviseTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wangdao.bean.technology.TechnologyRequirement">
+    insert into technology_requirement
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="technologyRequirementId != null">
+        technology_requirement_id,
+      </if>
+      <if test="technologyId != null">
+        technology_id,
+      </if>
+      <if test="requirement != null">
+        requirement,
+      </if>
+      <if test="addTime != null">
+        add_time,
+      </if>
+      <if test="reviseTime != null">
+        revise_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="technologyRequirementId != null">
+        #{technologyRequirementId,jdbcType=VARCHAR},
+      </if>
+      <if test="technologyId != null">
+        #{technologyId,jdbcType=VARCHAR},
+      </if>
+      <if test="requirement != null">
+        #{requirement,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null">
+        #{addTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviseTime != null">
+        #{reviseTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wangdao.bean.technology.TechnologyRequirement">
+    update technology_requirement
+    <set>
+      <if test="technologyId != null">
+        technology_id = #{technologyId,jdbcType=VARCHAR},
+      </if>
+      <if test="requirement != null">
+        requirement = #{requirement,jdbcType=VARCHAR},
+      </if>
+      <if test="addTime != null">
+        add_time = #{addTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviseTime != null">
+        revise_time = #{reviseTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where technology_requirement_id = #{technologyRequirementId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wangdao.bean.technology.TechnologyRequirement">
+    update technology_requirement
+    set technology_id = #{technologyId,jdbcType=VARCHAR},
+      requirement = #{requirement,jdbcType=VARCHAR},
+      add_time = #{addTime,jdbcType=TIMESTAMP},
+      revise_time = #{reviseTime,jdbcType=TIMESTAMP}
+    where technology_requirement_id = #{technologyRequirementId,jdbcType=VARCHAR}
+  </update>
+
+  <resultMap id="myTechnology" type="com.wangdao.bean.technology.TechnologyRequirement">
+    <id property="technologyId" column="technology_id"></id>
+    <collection property="technology"
+                select="com.wangdao.dao.technology.TechnologyMapper.selectByPrimaryKey"
+                column="technology_id">
+    </collection>
+  </resultMap>
+
+  <select id="selectByPage" resultMap="myTechnology">
+    select * from technology_requirement
+    <where>
+      1=1
+      <if test="technologyRequirement.technologyRequirementId !=null">
+        AND technology_requirement_id like '%${technologyRequirement.technologyRequirementId}%'
+      </if>
+      <if test="technologyRequirement.technologyId !=null">
+        AND technology_id like '%${technologyRequirement.technologyId}%'
+      </if>
+    </where>
+  </select>
+
+  <select id="searchByTechnologyId" parameterType="string" resultMap="myTechnology">
+    select * from technology_Requirement where technology_Id = #{tid};
+
+  </select>
+
+  <select id="seachByTechnologyIdList" parameterType="list" resultMap="myTechnology">
+    select * from technology_Requirement
+    <where>
+      <foreach collection="list" index="index" item="item" open="technology_id=" separator="or technology_id=" close="">
+        ${item}
+      </foreach>
+    </where>
+  </select>
+
+</mapper>

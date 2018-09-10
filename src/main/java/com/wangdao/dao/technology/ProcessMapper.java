@@ -18,5 +18,5 @@ public interface ProcessMapper {
 
     int updateByPrimaryKey(Process record);
 
-    List<Process> selectByPage(Map<String,Object> params);
+    List<Process> selectByPage(Map<String, Object> params);
 }
