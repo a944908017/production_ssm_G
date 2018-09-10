@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangdao.dao.plan.CustomMapper">
+    <resultMap id="BaseResultMap" type="com.wangdao.bean.plan.Custom">
+        <id column="custom_id" jdbcType="VARCHAR" property="customId"/>
+        <result column="custom_name" jdbcType="VARCHAR" property="customName"/>
+        <result column="full_name" jdbcType="VARCHAR" property="fullName"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="owner_name" jdbcType="VARCHAR" property="ownerName"/>
+        <result column="owner_tel" jdbcType="VARCHAR" property="ownerTel"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="note" jdbcType="VARCHAR" property="note"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    custom_id, custom_name, full_name, address, fax, email, owner_name, owner_tel, status,
+    note
+  </sql>
+
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
+
+    <insert id="insert" parameterType="com.wangdao.bean.plan.Custom">
+    insert into custom (custom_id, custom_name, full_name,
+      address, fax, email,
+      owner_name, owner_tel, status,
+      note)
+    values (#{customId,jdbcType=VARCHAR}, #{customName,jdbcType=VARCHAR}, #{fullName,jdbcType=VARCHAR},
+      #{address,jdbcType=VARCHAR}, #{fax,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+      #{ownerName,jdbcType=VARCHAR}, #{ownerTel,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+      #{note,jdbcType=VARCHAR})
+  </insert>
+
+    <delete id="deleteByExample" parameterType="com.wangdao.bean.plan.CustomExample">
+        delete from custom
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+    </delete>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.wangdao.bean.plan.Custom">
+        update custom
+        <set>
+            <if test="customName != null">
+                custom_name = #{customName,jdbcType=VARCHAR},
+            </if>
+            <if test="fullName != null">
+                full_name = #{fullName,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <if test="fax != null">
+                fax = #{fax,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="ownerName != null">
+                owner_name = #{ownerName,jdbcType=VARCHAR},
+            </if>
+            <if test="ownerTel != null">
+                owner_tel = #{ownerTel,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="note != null">
+                note = #{note,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where custom_id = #{customId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByExample" parameterType="com.wangdao.bean.plan.CustomExample" resultMap="BaseResultMap">
+        select
+        <if test="distinct">
+            distinct
+        </if>
+        'true' as QUERYID,
+        <include refid="Base_Column_List" />
+        from custom
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+    </select>
+
+    <select id="selectCustomInCustomByCustomId" resultMap="BaseResultMap">
+      SELECT
+      custom_id,
+      custom_name,
+      full_name,
+      address,
+      fax,
+      email,
+      owner_name,
+      owner_tel,
+      `status`,
+      note
+      FROM custom
+      WHERE custom_id=#{customId}
+    </select>
+
+    <select id="findAllCustom" resultMap="BaseResultMap">
+      SELECT
+      custom_id,
+      custom_name,
+      full_name,
+      address,
+      fax,
+      email,
+      owner_name,
+      owner_tel,
+      `status`,
+      note
+      FROM custom
+    </select>
+
+    <select id="selectCustomInCustomByCustomName" resultMap="BaseResultMap">
+      SELECT
+      custom_id,
+      custom_name,
+      full_name,
+      address,
+      fax,
+      email,
+      owner_name,
+      owner_tel,
+      `status`,
+      note
+      FROM custom
+      WHERE custom_name = #{customName}
+    </select>
+
+    <select id="selectCustomIdsByCustomName" resultType="string">
+        SELECT custom.custom_id FROM custom WHERE custom.custom_name LIKE #{customName}
+    </select>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from custom
+        where custom_id = #{customId,jdbcType=VARCHAR}
+    </select>
+</mapper>
