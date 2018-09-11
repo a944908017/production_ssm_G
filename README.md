@@ -1,7 +1,7 @@
-#production_ssm_G
+# production_ssm_G
 这是一个SSM（Spring+SpringMVC+Mybatis）+jQuery EasyUI开发的生产管理ERP系统。主要包括：计划进度、设备管理、工艺监控、物料监控、人员监控、质量监控、系统管理7大模块。
 
-##项目技术架构(Spring+SpringMVC+Mybatis）
+## 项目技术架构(Spring+SpringMVC+Mybatis）
 + Maven
 + Spring（IOC DI AOP 声明式事务处理）
 + SpringMVC（支持Restful风格）
