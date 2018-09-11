@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wangdao.dao.staff.DepartmentMapper">
+    <resultMap id="BaseResultMap" type="com.wangdao.bean.staff.Department">
+        <id column="department_id" jdbcType="VARCHAR" property="departmentId"/>
+        <result column="department_name" jdbcType="VARCHAR" property="departmentName"/>
+        <result column="note" jdbcType="VARCHAR" property="note"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    department_id, department_name, note
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from department
+        where department_id = #{departmentId,jdbcType=VARCHAR}
+    </select>
+    <!--查询指定条数的部门数-->
+    <select id="selectDepartmentByPage" parameterType="hashMap" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from department
+        <if test="limit != null">
+            limit #{limit}
+        </if>
+        <if test="offset != null">
+            offset #{offset}
+        </if>
+    </select>
+    <!--查找该表的总数据条数-->
+    <select id="selectAllDepartment" resultType="Integer">
+    SELECT COUNT(*) FROM department
+  </select>
+    <!--查找该表的所有数据-->
+    <select id="selectDepartmentList" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM department
+    </select>
+    <!--根据部门编号模糊查找-->
+    <select id="selectDepartmentByDid" parameterType="hashMap" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from department
+        <if test="searchValue != null">
+            WHERE department_id LIKE #{searchValue}
+        </if>
+        <if test="limit != null">
+            limit #{limit}
+        </if>
+        <if test="offset != null">
+            offset #{offset}
+        </if>
+    </select>
+    <!--根据部门编号查总数-->
+    <select id="selectDepartmentCountByDid" parameterType="string" resultType="integer">
+        SELECT COUNT(*) FROM department
+        <if test="_parameter != null">
+            WHERE department_id LIKE #{searchValue}
+        </if>
+    </select>
+    <!--根据部门名称模糊查找-->
+    <select id="selectDepartmentByDName" parameterType="hashMap" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from department
+        <if test="searchValue != null">
+            WHERE department_name LIKE #{searchValue}
+        </if>
+        <if test="limit != null">
+            limit #{limit}
+        </if>
+        <if test="offset != null">
+            offset #{offset}
+        </if>
+    </select>
+    <!--根据部门名称查总数-->
+    <select id="selectDepartmentCountByDName" parameterType="string" resultType="integer">
+        SELECT COUNT(*) FROM department
+        <if test="_parameter != null">
+            WHERE department_name LIKE #{searchValue}
+        </if>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from department
+    where department_id = #{departmentId,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="department">
+    insert into department (department_id, department_name, note
+      )
+    values (#{departmentId,jdbcType=VARCHAR}, #{departmentName,jdbcType=VARCHAR}, #{note,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.wangdao.bean.staff.Department">
+        insert into department
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="departmentId != null">
+                department_id,
+            </if>
+            <if test="departmentName != null">
+                department_name,
+            </if>
+            <if test="note != null">
+                note,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentName != null">
+                #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="note != null">
+                #{note,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.wangdao.bean.staff.Department">
+        update department
+        <set>
+            <if test="departmentName != null">
+                department_name = #{departmentName,jdbcType=VARCHAR},
+            </if>
+            <if test="note != null">
+                note = #{note,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where department_id = #{departmentId,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.wangdao.bean.staff.Department">
+    update department
+    set department_name = #{departmentName,jdbcType=VARCHAR},
+      note = #{note,jdbcType=VARCHAR}
+    where department_id = #{departmentId,jdbcType=VARCHAR}
+  </update>
+</mapper>
